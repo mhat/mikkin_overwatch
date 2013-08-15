@@ -1,0 +1,121 @@
+<html>
+  <head>
+    <title>mikkin-overwatch</title>
+    <link rel="stylesheet" type="text/css" href="assets/css/reset.css">
+    <script type="text/javascript" src="assets/js/jquery.1.10.2.min.js"></script> 
+    <style type="text/css">
+	html {
+		background: #000;
+		color: #fff;
+	}
+
+	.terminal {
+		position: fixed;
+		top: 0px;
+		left: 0px;
+		z-index: 0;
+		width:100%;
+		height:100%;
+		background-image:url('/assets/img/bg1.jpg');
+		background-position: center;
+		background-repeat: no-repeat;
+		//-webkit-filter: blur(10px);
+	}
+
+	.terminal-text {
+		height: 90%;
+		z-index: 1;
+		border: 1px solid #333;
+		padding: 5px 7px 5px 7px;
+		margin: 30px 40px 30px 40px;
+		background: #000;
+		opacity:0.75;
+		font-faimly: Fixed monospace;
+		font-size: 10pt;
+		overflow-y: scroll;
+	}
+
+        .terminal-text-count {
+	  color: #666666;
+        }
+
+        .terminal-text-channel {
+	  color: #0000CC;
+        }
+
+        .terminal-text-line {
+	  color: #DDDDDD;
+        }
+
+	.terminal-text-pipe {
+	  color: #222222;
+        }
+
+        .terminal-text-date {
+	  color: #AAAAAA;
+        }
+
+    </style>
+    <script type="text/javascript">
+
+      function scrollToElement(selector, time, verticalOffset) {
+          time = typeof(time) != 'undefined' ? time : 1000;
+          verticalOffset = typeof(verticalOffset) != 'undefined' ? verticalOffset : 0;
+          element = $(selector);
+          offset = element.offset();
+          offsetTop = offset.top + verticalOffset;
+          console.log("offset: " + offsetTop);
+          $('html, body').animate({
+              scrollTop: offsetTop
+          }, time);
+      }
+
+      $(function(){
+        var ws    = new WebSocket("ws://localhost:4000/websocket");
+        var count = 0;
+
+        var regex_date1 = /(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Dec)\s(\d{1,2})\s(\d{2}\:\d{2}\:\d{2})/;
+
+        ws.onmessage = function(event) {
+          count   += 1;
+          var json = JSON.parse(event.data);
+          var chan = json['Channel'];
+          var line = json['Content'];
+
+          // make lines a little more pretty
+          if (line.match(regex_date1)) {
+            line = line.replace(regex_date1, '<span class="terminal-text-date">$1 $2 $3</span>');
+          }
+
+          var html = "";
+          html += '<div class="row">';
+          html += '<span class="terminal-text-count">' + count + '</span>';
+          html += '<span class="terminal-text-pipe">&nbsp;|&nbsp;</span>';
+          html += '<span class="terminal-text-channel">' + chan + '</span>';
+          html += '<span class="terminal-text-pipe">&nbsp;|&nbsp;</span>';
+          html += '<span class="terminal-text-line">' + line + '</span>';
+          html += '</div>';
+          var node = $(".terminal-text");
+
+          // remove one from the top if necessary
+          if (node.children().length >= 5000) {
+            console.log("pushing off the top")
+            node.children()[0].remove()
+          }
+
+          // add one to the bottom!
+          node.append(html)
+          $(".terminal-text").scrollTop($(".terminal-text").last()[0].scrollHeight);
+        }
+      });
+    </script>
+  </head> 
+  <body>
+	  <div class="terminal"></div>
+	  <div class="terminal-text">
+		  <div class="row">... initalizing ...</div>
+	  </div>
+  </body>
+</html>
+
+
