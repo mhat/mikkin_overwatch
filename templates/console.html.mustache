@@ -3,6 +3,7 @@
     <title>mikkin-overwatch</title>
     <link rel="stylesheet" type="text/css" href="assets/css/reset.css">
     <script type="text/javascript" src="assets/js/jquery.1.10.2.min.js"></script> 
+    <script type="text/javascript" src="assets/js/ansi_up.js"></script> 
     <style type="text/css">
 	html {
 		background: #000;
@@ -105,10 +106,11 @@
     </style>
     <script type="text/javascript">
 
-	var search_dirty = false;
+	var search_dirty  = false;
+	var search_string = "";
         function search () {
-          var str = $('.search').val();
-          if (str.length <= 2 && search_dirty == true) {
+          search_string = $('.search').val();
+          if (search_string.length <= 2 && search_dirty == true) {
             $('.terminal-row').each(function(i,e){
               $(e).css('opacity', 1);
             });
@@ -116,13 +118,24 @@
           }
 
           $('.terminal-row').each(function(i,e){
-            if (!e.innerText.match(str)) {
-              console.log("s=" + str + "; e=" + e);
+            if (!e.innerText.match(search_string)) {
+              console.log("s=" + search_string + "; e=" + e);
               $(e).css('opacity', '0.4')
               search_dirty=true;
             }
           });
         }
+
+	function updateTerminalRowOpacityAsNeeded(e) {
+          if (search_string.length <= 2)
+            return
+
+          if (!e.innerText.match(search_string)) {
+	    console.log("adjusting new line");
+   	    $(e).css('opacity', '0.4');
+          }
+	}
+
 
 	function updateTerminal (text) {
           var node = $(".terminal-text");
@@ -135,8 +148,9 @@
           }
 
           // add one to the bottom!
-          node.append(trow)
-          $(".terminal-frame").scrollTop($(".terminal-text").last()[0].scrollHeight);
+          node.append(trow);
+          updateTerminalRowOpacityAsNeeded($(".terminal-row").last()[0]);
+          $(".terminal-frame").scrollTop($(".terminal-text")[0].scrollHeight);
 	}
 
       $(function(){
@@ -163,7 +177,7 @@
           html += '<span class="terminal-text-pipe">&nbsp;|&nbsp;</span>';
           html += '<span class="terminal-text-channel">' + chan + '</span>';
           html += '<span class="terminal-text-pipe">&nbsp;|&nbsp;</span>';
-          html += '<span class="terminal-text-line">' + line + '</span>';
+          html += '<span class="terminal-text-line">' + ansi_up.ansi_to_html(line) + '</span>';
 
 	  updateTerminal(html)
         }
