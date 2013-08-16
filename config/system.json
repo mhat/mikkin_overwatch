@@ -1,0 +1,17 @@
+[
+	{
+	        "Description" : "workfeed development log",
+	        "Name" : "workfeed-developer-log",
+		"Path" : "/opt/workfeed/log/development.log"
+	},
+	{
+	        "Description" : "workfeed unicorn stdout log",
+	        "Name" : "workfeed-unicorn-stdout-log",
+		"Path" : "/opt/workfeed/log/unicorn.stdout.log"
+	},
+	{
+	        "Description" : "workfeed unicorn stderr log",
+	        "Name" : "workfeed-unicorn-stderr-log",
+		"Path" : "/opt/workfeed/log/unicorn.stderr.log"
+	}
+]

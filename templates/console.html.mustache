@@ -9,7 +9,15 @@
 		color: #fff;
 	}
 
-	.terminal {
+	.terminal-socket-error {
+		position: fixed; top: 0px; left: 0px; height: 100px; width: 100px;
+		border:1px solid red;
+		z-index: 2;
+		display: none;
+		background-image:url('/assets/img/bzzzt.png');
+	}
+
+	.terminal-background {
 		position: fixed;
 		top: 0px;
 		left: 0px;
@@ -19,19 +27,21 @@
 		background-image:url('/assets/img/bg1.jpg');
 		background-position: center;
 		background-repeat: no-repeat;
-		//-webkit-filter: blur(10px);
 	}
 
-	.terminal-text {
+        .terminal-row {
+        	font-family: monospace;
+		font-size: 8pt;
+	}
+
+	.terminal-frame {
 		height: 90%;
 		z-index: 1;
 		border: 1px solid #333;
 		padding: 5px 7px 5px 7px;
-		margin: 30px 40px 30px 40px;
+		margin: 5px 40px 30px 40px;
 		background: #000;
 		opacity:0.75;
-		font-faimly: Fixed monospace;
-		font-size: 10pt;
 		overflow-y: scroll;
 	}
 
@@ -40,7 +50,7 @@
         }
 
         .terminal-text-channel {
-	  color: #0000CC;
+	  color: #CCCC00;
         }
 
         .terminal-text-line {
@@ -55,28 +65,89 @@
 	  color: #AAAAAA;
         }
 
+
+	.terminal-navbar {
+		border: 1px solid #333;
+		margin: 10px 40px 0px 40px;
+		background: #000;
+		opacity:0.75;
+	}
+
+	.search { 
+		padding:3px 15px 3px 30px;
+		margin:3px;
+		width: 250px;
+		background: url('./images/search.png') no-repeat 8px 6px; 
+	}
+	
+	input[type=text]{
+		border:1px solid #2a2e31;
+		background-color:#2d3035;
+		color:#bcbcbc;
+	}
+
+
+.clearfix:after {
+    clear: both;
+    content: ".";
+    display: block;
+    height: 0;
+    visibility: hidden;
+}
+.clearfix {
+    display: inline-block;
+}
+.clearfix {
+    display: block;
+}
+
+
     </style>
     <script type="text/javascript">
 
-      function scrollToElement(selector, time, verticalOffset) {
-          time = typeof(time) != 'undefined' ? time : 1000;
-          verticalOffset = typeof(verticalOffset) != 'undefined' ? verticalOffset : 0;
-          element = $(selector);
-          offset = element.offset();
-          offsetTop = offset.top + verticalOffset;
-          console.log("offset: " + offsetTop);
-          $('html, body').animate({
-              scrollTop: offsetTop
-          }, time);
-      }
+	var search_dirty = false;
+        function search () {
+          var str = $('.search').val();
+          if (str.length <= 2 && search_dirty == true) {
+            $('.terminal-row').each(function(i,e){
+              $(e).css('opacity', 1);
+            });
+            search_dirty=false;
+          }
+
+          $('.terminal-row').each(function(i,e){
+            if (!e.innerText.match(str)) {
+              console.log("s=" + str + "; e=" + e);
+              $(e).css('opacity', '0.4')
+              search_dirty=true;
+            }
+          });
+        }
+
+	function updateTerminal (text) {
+          var node = $(".terminal-text");
+          var trow = '<div class="terminal-row">' + text + '</div>';
+
+          // remove one from the top if necessary
+          if (node.children().length >= 5000) {
+            console.log("pushing off the top")
+            node.children()[0].remove()
+          }
+
+          // add one to the bottom!
+          node.append(trow)
+          $(".terminal-frame").scrollTop($(".terminal-text").last()[0].scrollHeight);
+	}
 
       $(function(){
-        var ws    = new WebSocket("ws://localhost:4000/websocket");
+        var regex_date1 = /(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Dec)\s(\d{1,2})\s(\d{2}\:\d{2}\:\d{2})/;
         var count = 0;
 
-        var regex_date1 = /(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Dec)\s(\d{1,2})\s(\d{2}\:\d{2}\:\d{2})/;
+	var onerror = function(event) {
+		console.log(event);
+	}
 
-        ws.onmessage = function(event) {
+        var onmessage = function(event) {
           count   += 1;
           var json = JSON.parse(event.data);
           var chan = json['Channel'];
@@ -88,33 +159,53 @@
           }
 
           var html = "";
-          html += '<div class="row">';
           html += '<span class="terminal-text-count">' + count + '</span>';
           html += '<span class="terminal-text-pipe">&nbsp;|&nbsp;</span>';
           html += '<span class="terminal-text-channel">' + chan + '</span>';
           html += '<span class="terminal-text-pipe">&nbsp;|&nbsp;</span>';
           html += '<span class="terminal-text-line">' + line + '</span>';
-          html += '</div>';
-          var node = $(".terminal-text");
 
-          // remove one from the top if necessary
-          if (node.children().length >= 5000) {
-            console.log("pushing off the top")
-            node.children()[0].remove()
-          }
-
-          // add one to the bottom!
-          node.append(html)
-          $(".terminal-text").scrollTop($(".terminal-text").last()[0].scrollHeight);
+	  updateTerminal(html)
         }
+
+	var connect = function() {
+        	var ws    = new WebSocket("ws://localhost:4000/websocket");
+		ws.onerror   = onerror;
+		ws.onclose   = onclose;
+		ws.onmessage = onmessage;
+		ws.onopen    = function() {
+			$('.terminal-socket-error').toggle(false);
+			updateTerminal("☃ Connected to Overwatchd at " + (new Date()));
+                };
+	}
+
+	var onclose = function(event) {
+		$('.terminal-socket-error').toggle(true);
+		updateTerminal("☏ Disconnected from Overwatchd at " + (new Date()));
+		window.setTimeout(function(){
+			updateTerminal("☎ Trying to reconnect to Overwatchd at " + (new Date()));
+			connect();
+		},10000);
+	}
+
+	connect();
+
       });
     </script>
   </head> 
-  <body>
-	  <div class="terminal"></div>
-	  <div class="terminal-text">
-		  <div class="row">... initalizing ...</div>
+  <body class="terminal-background">
+	<div class="terminal-socket-error"></div>
+	<div class="terminal-navbar">
+          <div style="float:right">
+		<form onsubmit="search()">
+			<input type="text" class="search" placeholder="Search..." onkeyup="search()">
+		</form>
 	  </div>
+          <div class="clearfix"></div><!-- wat? -->
+	</div>
+	<div class="terminal-frame">
+		<div class="terminal-text"></div>
+	</div>
   </body>
 </html>
 

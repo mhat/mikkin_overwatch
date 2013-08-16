@@ -4,8 +4,11 @@ import (
 	"code.google.com/p/go.net/websocket"
 	"github.com/ActiveState/tail"
 	"log"
+	"fmt"
 	"os"
+	"io/ioutil"
 	"net/http"
+	"encoding/json"
 )
 
 const listenAddr = "localhost:4000"
@@ -62,8 +65,65 @@ func channelToWSReader () {
 	}
 }
 
+
+type ConfigFileEntry struct {
+	Path string
+        Name string
+        Description string
+}
+
+func readConfig() {
+	var entries []ConfigFileEntry
+	sysconf, _ := ioutil.ReadFile("./config/system.json")
+	e := json.Unmarshal(sysconf, &entries)
+
+	if (e != nil) {
+		log.Printf("Sorry! config/system.json appears to be invalid!\n>> %s\n\n", e)
+		os.Exit(1)
+	}
+
+	for _, cfe := range entries {
+		log.Printf("Adding %s per config/system.json configuration.\n", cfe.Path)
+		MikkinStreamFiles = append(MikkinStreamFiles, MikkinStreamFile{
+			Name: cfe.Name,
+			Description: cfe.Description,
+			Path: cfe.Path,
+			Monitored: false,
+			tail: nil})
+	}
+
+	var svclist []string;
+	svcconf, _ := ioutil.ReadFile("./config/service.json")
+	json.Unmarshal(svcconf, &svclist)
+
+	if (e != nil) {
+		log.Printf("Sorry! config/service.json appears to be invalid!\n>> %s\n\n", e)
+		os.Exit(1)
+	}
+
+	for _, svc := range svclist {
+		log.Printf("Adding service logs for %s\n", svc)
+		MikkinStreamFiles = append(MikkinStreamFiles, MikkinStreamFile{
+			fmt.Sprintf("/var/log/%s/%s.log", svc),
+			fmt.Sprintf("%s-service-log", svc),
+			fmt.Sprintf("%s service log", svc), false, nil})
+
+		MikkinStreamFiles = append(MikkinStreamFiles, MikkinStreamFile{
+			fmt.Sprintf("/var/log/%s/gc.log", svc),
+			fmt.Sprintf("%s-gc-log", svc),
+			fmt.Sprintf("%s garbage collector log", svc), false, nil})
+
+		MikkinStreamFiles = append(MikkinStreamFiles, MikkinStreamFile{
+			fmt.Sprintf("/var/log/%s/requests.log", svc),
+			fmt.Sprintf("%s-request-log", svc),
+			fmt.Sprintf("%s request log", svc), false, nil})
+
+	}
+}
+
 func main() {
 	log.Printf("Initialize\n")
+	readConfig();
 	MikkinStreamFiles = append(MikkinStreamFiles, MikkinStreamFile{ "/var/log/system.log", "system", "systems generic logfile", false, nil })
 	MikkinStreamFiles = append(MikkinStreamFiles, MikkinStreamFile{ "/var/log/wifi.log",   "wifi",   "systems wifi log"       , false, nil })
 	MikkinStreamFiles = append(MikkinStreamFiles, MikkinStreamFile{ "/tmp/knopp.log",      "knopp",  "knopp log"              , false, nil })
