@@ -119,7 +119,6 @@
 
           $('.terminal-row').each(function(i,e){
             if (!e.innerText.match(search_string)) {
-              console.log("s=" + search_string + "; e=" + e);
               $(e).css('opacity', '0.4')
               search_dirty=true;
             }
@@ -131,7 +130,6 @@
             return
 
           if (!e.innerText.match(search_string)) {
-	    console.log("adjusting new line");
    	    $(e).css('opacity', '0.4');
           }
 	}
@@ -143,7 +141,6 @@
 
           // remove one from the top if necessary
           if (node.children().length >= 5000) {
-            console.log("pushing off the top")
             node.children()[0].remove()
           }
 
