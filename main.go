@@ -11,7 +11,7 @@ import (
 	"encoding/json"
 )
 
-const listenAddr = "localhost:4000"
+const listenAddr = "0.0.0.0:4000"
 var   pwd, _     = os.Getwd()
 
 
