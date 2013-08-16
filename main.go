@@ -104,7 +104,7 @@ func readConfig() {
 	for _, svc := range svclist {
 		log.Printf("Adding service logs for %s\n", svc)
 		MikkinStreamFiles = append(MikkinStreamFiles, MikkinStreamFile{
-			fmt.Sprintf("/var/log/%s/%s.log", svc),
+			fmt.Sprintf("/var/log/%s/%s.log", svc, svc),
 			fmt.Sprintf("%s-service-log", svc),
 			fmt.Sprintf("%s service log", svc), false, nil})
 
