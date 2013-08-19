@@ -39,8 +39,13 @@ func LogsHandler(w http.ResponseWriter, req *http.Request) {
 	w.Write(b)
 }
 
+type ConsoleView struct {
+  WebSocketUrl string
+}
+
 func HomeHandler(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Contet-Type", "text/html")
-	io.WriteString(w, mustache.RenderFile("templates/console.html.mustache"))
+	io.WriteString(w, mustache.RenderFile("templates/console.html.mustache",
+		ConsoleView{WebSocketUrl: "ws://localhost:4000/websocket"}))
 }
 

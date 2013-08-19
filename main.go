@@ -124,10 +124,6 @@ func readConfig() {
 func main() {
 	log.Printf("Initialize\n")
 	readConfig();
-	MikkinStreamFiles = append(MikkinStreamFiles, MikkinStreamFile{ "/var/log/system.log", "system", "systems generic logfile", false, nil })
-	MikkinStreamFiles = append(MikkinStreamFiles, MikkinStreamFile{ "/var/log/wifi.log",   "wifi",   "systems wifi log"       , false, nil })
-	MikkinStreamFiles = append(MikkinStreamFiles, MikkinStreamFile{ "/tmp/knopp.log",      "knopp",  "knopp log"              , false, nil })
-	MikkinStreamFiles = append(MikkinStreamFiles, MikkinStreamFile{ "/tmp/nooop.log",      "nope",   "not a log yet"          , false, nil })
 
 	go monitorFiles()
 	go channelToWSReader()
