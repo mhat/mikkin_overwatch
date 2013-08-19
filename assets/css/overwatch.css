@@ -1,0 +1,98 @@
+html {
+  background: #000;
+  color: #fff;
+}
+
+.terminal-background {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  z-index: 0;
+  width:100%;
+  height:100%;
+  background-image:url('/assets/img/bg1.jpg');
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.terminal-row {
+  font-family: monospace;
+  font-size: 8pt;
+}
+
+.terminal-frame {
+  height: 90%;
+  z-index: 1;
+  border: 1px solid #333;
+  padding: 5px 7px 5px 7px;
+  margin: 5px 40px 30px 40px;
+  background: #000;
+  opacity:0.75;
+  overflow-y: scroll;
+}
+
+.terminal-text-count {
+  color: #666666;
+}
+
+.terminal-text-channel {
+  color: #CCCC00;
+}
+
+.terminal-text-line {
+  color: #DDDDDD;
+}
+
+.terminal-text-pipe {
+  color: #222222;
+}
+
+.terminal-text-date {
+  color: #AAAAAA;
+}
+
+.terminal-socket-error {
+  position: fixed; top: 0px; left: 0px; height: 100px; width: 100px;
+  border:1px solid red;
+  z-index: 2;
+  display: none;
+  background-image:url('/assets/img/bzzzt.png');
+}
+
+/* navbar - which is really to say the search bar */
+.terminal-navbar {
+  border: 1px solid #333;
+  margin: 10px 40px 0px 40px;
+  background: #000;
+  opacity:0.75;
+}
+
+.search { 
+  padding:3px 15px 3px 30px;
+  margin:3px;
+  width: 250px;
+  background: url('/assets/img/search.png') no-repeat 8px 6px; 
+}
+
+input[type=text]{
+  border:1px solid #2a2e31;
+  background-color:#2d3035;
+  color:#bcbcbc;
+}
+
+/* copy-pasta so I could get float: right to work correctly in the navbar */
+.clearfix:after {
+  clear: both;
+  content: ".";
+  display: block;
+  height: 0;
+  visibility: hidden;
+}
+.clearfix {
+  display: inline-block;
+}
+.clearfix {
+  display: block;
+}
+
+
