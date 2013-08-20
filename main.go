@@ -93,11 +93,11 @@ func readConfig() {
 	}
 
 	var svclist []string;
-	svcconf, _ := ioutil.ReadFile("./config/service.json")
+	svcconf, _ := ioutil.ReadFile("./config/dropwizard.json")
 	json.Unmarshal(svcconf, &svclist)
 
 	if (e != nil) {
-		log.Printf("Sorry! config/service.json appears to be invalid!\n>> %s\n\n", e)
+		log.Printf("Sorry! config/dropwizard.json appears to be invalid!\n>> %s\n\n", e)
 		os.Exit(1)
 	}
 
