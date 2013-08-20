@@ -124,6 +124,6 @@ Overwatch.View.Terminal = Backbone.View.extend({
   },
 
   removeLine: function() {
-    this.$el.children()[0].remove();
+    $(this.$el.children()[0]).remove();
   }
 });
