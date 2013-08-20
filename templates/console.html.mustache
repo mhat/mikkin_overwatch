@@ -41,9 +41,9 @@ $(function() {
 
   var onclose = function(event) {
     $('.terminal-socket-error').toggle(true);
-    updateTerminal("☏ Disconnected from Overwatchd at " + (new Date()));
+    lines.add({channel:"☏", content: "Disconnected from Overwatchd at " + (new Date())});
     window.setTimeout(function(){
-      lines.add({channel: "☎", content: "Disconnect from Overwatchd at " + (new Date())});
+      lines.add({channel: "☎", content: "Trying to reconnect to Overwatchd at " + (new Date())});
       connect();
     },10000);
   }
