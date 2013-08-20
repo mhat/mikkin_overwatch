@@ -20,6 +20,8 @@ func attachTailer (msf *MikkinStreamFile, seek int64) {
 	go func() {
 		for {
 			line := <-msf.tail.Lines
+			msf.buffer.Value = line.Text
+			msf.buffer = msf.buffer.Next()
 			ChannelToWS <- WSServerMessage{msf.Path, line.Text}
 		}
 	}()
@@ -29,6 +31,12 @@ func attachTailer (msf *MikkinStreamFile, seek int64) {
 
 func monitorFiles () {
 	duration, _ := time.ParseDuration("10s")
+
+	for _, log := range OverwatchConfiguration.LogsToWatch.All() {
+		msf := NewFile(log)
+		MikkinStreamFiles = append(MikkinStreamFiles, *msf)
+	}
+
 	for {
 		for i, _ := range MikkinStreamFiles {
 			msf := &MikkinStreamFiles[i]
@@ -59,8 +67,4 @@ func monitorFiles () {
 	}
 
 }
-
-
-
-
 

@@ -22,6 +22,17 @@ func SockServer(ws *websocket.Conn) {
 
 	cc := ClientConnection{websocket: ws, clientIP: ws.Request().RemoteAddr}
 	ClientConnections[cc] = 0
+	log.Printf("Websocket Connected Client [%s]\n", cc.clientIP)
+
+	// update the client with state!
+	for i, _ := range MikkinStreamFiles {
+		msf := &MikkinStreamFiles[i]
+		msf.buffer.Do(func(p interface{}) {
+			if (p != nil) {
+				websocket.JSON.Send(ws, WSServerMessage{msf.Path, p.(string)})
+			}
+		})
+	}
 
 	for {
 		if err = websocket.JSON.Receive(ws, &clientMessage); err != nil {
