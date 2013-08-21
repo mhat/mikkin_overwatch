@@ -87,7 +87,7 @@ Overwatch.View.Terminal = Backbone.View.extend({
     tmpl += '<span class="terminal-text-pipe">&nbsp;|&nbsp;</span>';
     tmpl += '<span class="terminal-text-channel">{{channel}}</span>';
     tmpl += '<span class="terminal-text-pipe">&nbsp;|&nbsp;</span>';
-    tmpl += '<span class="terminal-text-line">{{content}}</span>';
+    tmpl += '<span class="terminal-text-line">{{{content}}}</span>';
     tmpl += "</div>"
     return tmpl;
   }(),
