@@ -20,3 +20,12 @@ It's by no means unique. I found a handful of similar services before I started.
 just use one of those but I was also looking for a low risk project to experiment with GoLang
 and so here we are. 
 
+
+notes
+=====
+
+If you are using Ubuntu 12.04 with the 3.2.0 Kernel you need to make sure you're at patch 37 or
+above. Lower patch levels have (or may have) a inotify leak: after subscribing to 128 files you
+won't be able to subscribe to any more. It's cumulative and applies to commands like tail as 
+well. So that's pretty neat. 
+
