@@ -5,61 +5,67 @@ import (
 	"log"
 	"os"
 	"time"
+	"container/ring"
 )
 
-func attachTailer (msf *MikkinStreamFile, seek int64) {
+type WatchedLogFile struct {
+	Info LogToWatch
+	TailerIsAttached bool
+	Buffer *ring.Ring
+}
+var WatchedLogFiles []WatchedLogFile
 
-	t, _ := tail.TailFile(msf.Path, tail.Config{
-		Follow: true,
-		ReOpen: true,
-		Location: &tail.SeekInfo{-seek, os.SEEK_END} })
-	msf.tail = t
-	msf.Monitored = true
-
-	log.Printf("Monitoring: %s", msf.Path)
-	go func() {
-		for {
-			line := <-msf.tail.Lines
-			msf.buffer.Value = line.Text
-			msf.buffer = msf.buffer.Next()
-			ChannelToWS <- WSServerMessage{msf.Path, line.Text}
-		}
-	}()
-
+func NewWatchedLogFile (log LogToWatch) *WatchedLogFile {
+	logfile := WatchedLogFile{log, false, ring.New(10)}
+	WatchedLogFiles = append(WatchedLogFiles, logfile)
+	return &logfile
 }
 
-
-func monitorFiles () {
+func FileWatcher (logsToWatch []LogToWatch, broadcast chan WSServerMessage) {
 	duration, _ := time.ParseDuration("10s")
-
-	for _, log := range OverwatchConfiguration.LogsToWatch.All() {
-		msf := NewFile(log)
-		MikkinStreamFiles = append(MikkinStreamFiles, *msf)
+	for _, log := range logsToWatch {
+		NewWatchedLogFile(log)
 	}
 
 	for {
-		for i, _ := range MikkinStreamFiles {
-			msf := &MikkinStreamFiles[i]
+		for i, _ := range WatchedLogFiles {
+			wlog := &WatchedLogFiles[i]
 
-			// if the file is being monitored already we can ignore it
-			if (msf.Monitored == true) {
+			if (wlog.TailerIsAttached == true) {
 				continue
 			}
 
-			// file's not moniterod, figure out a sensable amount to read at the tail end
-			f, e := os.Open(msf.Path)
+			// check to see if the file exists
+			wlogfh, e := os.Open(wlog.Info.Path)
 			if (os.IsNotExist(e)) {
-				msf.Monitored = false
+				wlog.TailerIsAttached = false
 				continue
 			}
 
-			stat, _ := f.Stat()
-			seek    := IntMin(stat.Size(), 1000)
-			f.Close()
+			// now we want to pre-populate the log-buffer with the last few bytes
+			// of the log file; this makes it a little nicer for clients on their
+			// initial connection
+			stat, _ := wlogfh.Stat()
+			seek    := IntMin(stat.Size(), 2000)
+			wlogfh.Close()
 
-			// attach a tailer and mark msf as monitored
-			attachTailer(msf, seek)
-			msf.Monitored = true
+			log.Printf("Attching Tailer to %s\n", wlog.Info.Path)
+			tailer, _ := tail.TailFile(wlog.Info.Path, tail.Config{
+				Follow: true,
+				ReOpen: true,
+				Location: &tail.SeekInfo{-seek, os.SEEK_END} })
+
+			wlog.TailerIsAttached = true
+			go func() {
+				for {
+					newline := <-tailer.Lines
+					//log.Printf("Read from [%s] text [%s]\n", wlog.Info.Path, newline.Text)
+					wlog.Buffer.Value = newline.Text
+					wlog.Buffer = wlog.Buffer.Next()
+					broadcast <- WSServerMessage{wlog.Info.Path, newline.Text}
+				}
+			}()
+
 		}
 
 		// paaaaaause
@@ -67,3 +73,4 @@ func monitorFiles () {
 	}
 
 }
+
