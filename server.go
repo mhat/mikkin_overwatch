@@ -152,11 +152,15 @@ func LogsHandler(w http.ResponseWriter, req *http.Request) {
 
 type ConsoleView struct {
 	WebSocketUrl string
+	BingImageOfTheDayUrl string
 }
 
 func HomeHandler(w http.ResponseWriter, req *http.Request) {
+
 	tmpl := path.Join(OverwatchConfiguration.TemplatePath, "console.html.mustache")
-	view := ConsoleView{WebSocketUrl: OverwatchConfiguration.WebSocketUrl.String()}
+	view := ConsoleView{
+		WebSocketUrl: OverwatchConfiguration.WebSocketUrl.String(),
+		BingImageOfTheDayUrl: GetBingImageOfTheDayUrl() }
 	w.Header().Set("Contet-Type", "text/html")
 	io.WriteString(w, mustache.RenderFile(tmpl, view))
 }

@@ -12,6 +12,7 @@ func init() {
 	flag.StringVar(&OverwatchConfiguration.ServerConfigFile, "config", "config/server.json", "/path/to/config")
 }
 
+
 func main() {
 	flag.Parse()
 	OverwatchConfiguration.LoadConfiguration()
@@ -22,6 +23,9 @@ func main() {
 	// watch some files
 	go FileWatcher(OverwatchConfiguration.LogsToWatch.All(), cm.BroadcastChannel)
 	go MessageBroadcaster(cm)
+
+	// cute
+	go BingImageOfTheDayPoller()
 
 	log.Printf("------------------------------\n")
 	log.Printf("Register Static Assets\n")

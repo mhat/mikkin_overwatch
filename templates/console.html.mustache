@@ -11,6 +11,7 @@
     <script type="text/javascript" src="assets/js/overwatch.js"></script>
     <script type="text/javascript">
 
+var $ws = null
 $(function() {
 
   var lines = new Overwatch.Collection.LogLines();
@@ -25,11 +26,11 @@ $(function() {
     var json = JSON.parse(event.data);
     var channel = json['Channel'];
     var content = json['Content'];
-    lines.add({channel: channel, content: content})
   }
 
   var connect = function() {
     var ws = new WebSocket("{{WebSocketUrl}}");
+    $ws = ws;
     ws.onerror   = onerror;
     ws.onclose   = onclose;
     ws.onmessage = onmessage;
@@ -49,6 +50,8 @@ $(function() {
   }
 
   connect();
+  $(".terminal-background").css("background-image", "url({{BingImageOfTheDayUrl}})");
+
 });
     </script>
   </head>
