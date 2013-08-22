@@ -16,7 +16,7 @@ type WatchedLogFile struct {
 var WatchedLogFiles []WatchedLogFile
 
 func NewWatchedLogFile (log LogToWatch) *WatchedLogFile {
-	logfile := WatchedLogFile{log, false, ring.New(10)}
+	logfile := WatchedLogFile{log, false, ring.New(25)}
 	WatchedLogFiles = append(WatchedLogFiles, logfile)
 	return &logfile
 }

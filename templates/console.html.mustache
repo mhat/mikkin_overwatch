@@ -26,6 +26,7 @@ $(function() {
     var json = JSON.parse(event.data);
     var channel = json['Channel'];
     var content = json['Content'];
+    lines.add({channel: channel, content: content})
   }
 
   var connect = function() {

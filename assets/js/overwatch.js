@@ -15,8 +15,8 @@ Overwatch.Model.LogLine = Backbone.Model.extend({
 
 
 Overwatch.Collection.LogLines = Backbone.Collection.extend({
-  counter:   0,
-  maxSize: 100,
+  counter:    0,
+  maxSize: 2500,
   model: Overwatch.Model.LogLine,
 
   initialize: function() {
