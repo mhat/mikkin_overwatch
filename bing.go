@@ -19,7 +19,7 @@ func BingImageOfTheDayPoller () {
 		path    := xmlpath.MustCompile("/images/image/url")
 		root, _ := xmlpath.Parse(resp.Body)
 		if text, ok := path.String(root); ok {
-			BingImageOfTheDayUrl = fmt.Sprintf("http://www.bing.com%s", text)
+			BingImageOfTheDayUrl = fmt.Sprintf("https://www.bing.com%s", text)
 			log.Printf("Setting BingImageOfTheDay: %s\n", BingImageOfTheDayUrl)
 		}
 
@@ -30,7 +30,7 @@ func BingImageOfTheDayPoller () {
 func GetBingImageOfTheDayUrl() string {
 	// fallback
 	if BingImageOfTheDayUrl == "" {
-		imageUrl, _ := url.Parse(fmt.Sprintf("http://%s:%d/%s",
+		imageUrl, _ := url.Parse(fmt.Sprintf("https://%s:%d/%s",
 			OverwatchConfiguration.ServerName,
 			OverwatchConfiguration.BindPort,
 			"assets/img/bg1.jpg"))
