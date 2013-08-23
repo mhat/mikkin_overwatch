@@ -44,6 +44,7 @@ Overwatch.View.Navigation = Backbone.View.extend({
   initialize: function() {
     this.searchInput = this.$(".search");
     this.inSearch    = false;
+    this.searchScheduled = false;
   },
 
   submit: function(e) {
@@ -55,24 +56,27 @@ Overwatch.View.Navigation = Backbone.View.extend({
     var query = this.searchInput.val();
     var that  = this;
 
-    /* gross but simple part 1 */
-    if (query.length <= 2 && this.inSearch == true) {
-      $('.terminal-row').each(function(i,e){
-        $(e).removeAttr('style');
-      });
-      this.inSearch = false;
+    /* only search if we need to */
+    if (this.searchScheduled == true) {
       return
     }
 
-    $('.terminal-row').each(function(i,e){
-      if (! e.innerText.match(query)) {
-        $(e).css('opacity', '0.4')
-        that.inSearch = true;
-      } else {
-        $(e).removeAttr('style');
-        that.inSearch = true;
-      }
-    });
+    /* use set-timeout to accumulate keystrokes for up to 100ms */
+    this.seachScheduled = true;
+    window.setTimeout(function(){
+      /* gross but simple part 1 */
+      if (query.length <= 2 && that.inSearch == true) {
+        $(".terminal-row").removeAttr('style');
+        that.inSearch = false;
+       }
+       else {
+         $(".terminal-row").css('opacity', '0.4')
+         $(".terminal-row:contains('" + query + "')").removeAttr('style')
+         that.inSearch = true;
+       }
+
+       that.searchScheduled = false;
+    },100);
   }
 
 });
