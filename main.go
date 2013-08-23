@@ -41,9 +41,11 @@ func main() {
 	http.Handle("/websocket", websocket.Handler(NewWebsocketHandler(cm)))
 	log.Printf("------------------------------\n")
 
-	err := http.ListenAndServe(fmt.Sprintf("%s:%d",
-		OverwatchConfiguration.BindAddress,
-		OverwatchConfiguration.BindPort), nil)
+        bindAddressAndPort := fmt.Sprintf("%s:%d", OverwatchConfiguration.BindAddress, OverwatchConfiguration.BindPort)
+        cert := "/etc/ssl/certs/any.yammer.dev.pem"
+        key  := "/etc/ssl/private/any.yammer.dev.key"
+        err := http.ListenAndServeTLS(bindAddressAndPort, cert, key, nil)
+
 	if err != nil {
 		panic("ListenAndServe: " + err.Error())
 	}

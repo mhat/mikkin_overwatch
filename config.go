@@ -27,6 +27,8 @@ type OverwatchConfigurationStruct struct {
 
 	Verbose bool
 	RootPath string
+	CertificateFile string
+	CertificateKeyFile string
 
 	LogsToWatch LogsToWatchStruct
 }
@@ -48,7 +50,7 @@ func (*OverwatchConfigurationStruct) LoadConfiguration() {
 	}
 
 	OverwatchConfiguration.RootPath, _ = os.Getwd()
-	OverwatchConfiguration.WebSocketUrl, _ = url.Parse(fmt.Sprintf("ws://%s:%d/websocket",
+	OverwatchConfiguration.WebSocketUrl, _ = url.Parse(fmt.Sprintf("wss://%s:%d/websocket",
 		OverwatchConfiguration.ServerName,
 		OverwatchConfiguration.BindPort))
 
@@ -72,6 +74,9 @@ func (*OverwatchConfigurationStruct) LoadConfiguration() {
 		log.Printf("  BindAddress .......... : %s\n", OverwatchConfiguration.BindAddress)
 		log.Printf("  BindPort ............. : %d\n", OverwatchConfiguration.BindPort)
 		log.Printf("  WebSocketUrl ......... : %s\n", OverwatchConfiguration.WebSocketUrl)
+		log.Printf("------------------------------\n")
+		log.Printf("  CertificateFile ...... : %s\n", OverwatchConfiguration.CertificateFile)
+		log.Printf("  CertificateKeyFile ... : %s\n", OverwatchConfiguration.CertificateKeyFile)
 		log.Printf("------------------------------\n")
 		log.Printf("  TemplatePath ......... : %s\n", OverwatchConfiguration.TemplatePath)
 		log.Printf("  AssetPath ............ : %s\n", OverwatchConfiguration.AssetPath)

@@ -1,9 +1,12 @@
 {
       "Verbose":      true
   
-    , "ServerName":   "localhost"
+    , "ServerName":   "www.yammer.dev"
     , "BindAddress":  "0.0.0.0"
     , "BindPort":     4000
+
+    , "CertificateFile"    : "config/cert.pem"
+    , "CertificateKeyFile" : "config/cert.key"
   
     , "TemplatePath": "./templates/"
     , "AssetPath":    "./assets/"

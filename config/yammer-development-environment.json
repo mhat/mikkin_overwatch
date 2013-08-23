@@ -4,6 +4,10 @@
     , "ServerName":   "www.yammer.dev"
     , "BindAddress":  "0.0.0.0"
     , "BindPort":     4000
+
+    , "CertificateFile" : "/etc/mikkin_overwatch/cert.pem"                                                          
+    , "CertificateKeyFile" : "/etc/mikkin_overwatch/cert.key"
+
   
     , "TemplatePath": "/opt/mikkin_overwatch/templates/"
     , "AssetPath":    "/opt/mikkin_overwatch/assets/"
