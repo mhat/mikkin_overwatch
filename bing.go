@@ -19,7 +19,7 @@ func BingImageOfTheDayPoller () {
 		path    := xmlpath.MustCompile("/images/image/url")
 		root, _ := xmlpath.Parse(resp.Body)
 		if text, ok := path.String(root); ok {
-			BingImageOfTheDayUrl = fmt.Sprintf("https://www.bing.com%s", text)
+			BingImageOfTheDayUrl = fmt.Sprintf("http://www.bing.com%s", text)
 			log.Printf("Setting BingImageOfTheDay: %s\n", BingImageOfTheDayUrl)
 		}
 
