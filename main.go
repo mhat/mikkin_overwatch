@@ -42,9 +42,9 @@ func main() {
 	log.Printf("------------------------------\n")
 
         bindAddressAndPort := fmt.Sprintf("%s:%d", OverwatchConfiguration.BindAddress, OverwatchConfiguration.BindPort)
-        cert := "/etc/ssl/certs/any.yammer.dev.pem"
-        key  := "/etc/ssl/private/any.yammer.dev.key"
-        err := http.ListenAndServeTLS(bindAddressAndPort, cert, key, nil)
+        cert := OverwatchConfiguration.CertificateFile
+        key  := OverwatchConfiguration.CertificateKeyFile
+        err  := http.ListenAndServeTLS(bindAddressAndPort, cert, key, nil)
 
 	if err != nil {
 		panic("ListenAndServe: " + err.Error())
