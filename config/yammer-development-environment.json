@@ -15,7 +15,7 @@
     , "LogsToWatch": {
   
         "DropWizardServices": [
-          , "artie"
+            "artie"
           , "choosie"
           , "completie"
           , "dexie"
